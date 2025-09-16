@@ -1,8 +1,10 @@
 package config
 
 import (
+	"SEv0/utils"
 	"context"
 	"fmt"
+	"log"
 	"os"
 
 	_ "github.com/lib/pq"
@@ -27,11 +29,13 @@ func InitWA(dbAddress string) (*whatsmeow.Client, context.Context, error) {
 	ctx := context.Background()
 	container, err := sqlstore.New(ctx, "postgres", dbAddress, dbLog)
 	if err != nil {
+		log.Fatal("Failed to initialize ", utils.ColorText("Whatsapp ", utils.Red), "client, error: ", err)
 		return nil, nil, fmt.Errorf("failed to create sqlstore: %w", err)
 	}
 
 	deviceStore, err := container.GetFirstDevice(ctx)
 	if err != nil {
+		log.Fatal("Failed to get ", utils.ColorText("Device first ", utils.Yellow), ", error: ", err)
 		return nil, nil, fmt.Errorf("failed to get device: %w", err)
 	}
 
@@ -42,6 +46,7 @@ func InitWA(dbAddress string) (*whatsmeow.Client, context.Context, error) {
 	if client.Store.ID == nil {
 		qrChan, _ := client.GetQRChannel(ctx)
 		if err := client.Connect(); err != nil {
+			log.Fatal("Failed to connect ", utils.ColorText("Whatsapp ", utils.Red), "client, error: ", err)
 			return nil, nil, fmt.Errorf("failed to connect client: %w", err)
 		}
 		for evt := range qrChan {
@@ -54,6 +59,7 @@ func InitWA(dbAddress string) (*whatsmeow.Client, context.Context, error) {
 		}
 	} else {
 		if err := client.Connect(); err != nil {
+			log.Fatal("Failed to connect ", utils.ColorText("Whatsapp ", utils.Red), "client, error: ", err)
 			return nil, nil, fmt.Errorf("failed to connect client: %w", err)
 		}
 	}

@@ -19,7 +19,7 @@ import (
 type Payload struct {
 	To       []string `json:"to"`
 	Message  string   `json:"message"`
-	Repeater int      `json:"repeater"`
+	Repeater *int     `json:"repeater"`
 }
 
 func InitApi(WA *whatsmeow.Client, ctx context.Context) error {
@@ -50,7 +50,10 @@ func InitApi(WA *whatsmeow.Client, ctx context.Context) error {
 			})
 		}
 
-		// Loop through all recipients
+		if payload.Repeater == nil {
+			*payload.Repeater = 1
+		}
+
 		for _, phone := range payload.To {
 			completeFormat := fmt.Sprintf("%s%s", phone[:2], phone[2:])
 			JID := types.NewJID(completeFormat, types.DefaultUserServer)
@@ -59,7 +62,7 @@ func InitApi(WA *whatsmeow.Client, ctx context.Context) error {
 				Conversation: &payload.Message,
 			}
 
-			for i := 0; i < payload.Repeater; i++ {
+			for i := 0; i < *payload.Repeater; i++ {
 				_, err := WA.SendMessage(ctx, JID, ConversationMessage)
 				if err != nil {
 					log.Print("/send route accessed failed, code: ", utils.ColorStatus(500), ", error: ", err)

@@ -21,3 +21,7 @@ func ColorStatus(code int) string {
 		return fmt.Sprint(code)
 	}
 }
+
+func ColorText(text, color string) string {
+	return color + text + Reset
+}

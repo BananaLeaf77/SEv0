@@ -1,6 +1,7 @@
 package config
 
 import (
+	"SEv0/utils"
 	"fmt"
 	"log"
 	"os"
@@ -26,10 +27,10 @@ func BootDB() (*gorm.DB, *string, error) {
 	address := GetDatabaseURL()
 	db, err := gorm.Open(postgres.Open(address), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+		log.Fatal("Failed to connect to ", utils.ColorText("Database: ", utils.Red), err)
 		return nil, nil, err
 	}
 
-	log.Println("Database connection established")
+	log.Print("Connected to ", utils.ColorText("Database", utils.Green), " successfully")
 	return db, &address, nil
 }
