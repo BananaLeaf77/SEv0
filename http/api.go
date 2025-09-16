@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -18,7 +19,7 @@ import (
 
 type Payload struct {
 	To       []string `json:"to"`
-	Message  string   `json:"message"`
+	Messages []string `json:"messages"`
 	Repeater *int     `json:"repeater"`
 }
 
@@ -51,26 +52,54 @@ func InitApi(WA *whatsmeow.Client, ctx context.Context) error {
 		}
 
 		if payload.Repeater == nil {
-			*payload.Repeater = 1
+			defaultRepeater := 1
+			payload.Repeater = &defaultRepeater
 		}
 
-		for _, phone := range payload.To {
-			completeFormat := fmt.Sprintf("%s%s", phone[:2], phone[2:])
-			JID := types.NewJID(completeFormat, types.DefaultUserServer)
+		timeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+		defer cancel()
 
-			ConversationMessage := &waE2E.Message{
-				Conversation: &payload.Message,
-			}
+		done := make(chan error, 1)
 
-			for i := 0; i < *payload.Repeater; i++ {
-				_, err := WA.SendMessage(ctx, JID, ConversationMessage)
-				if err != nil {
-					log.Print("/send route accessed failed, code: ", utils.ColorStatus(500), ", error: ", err)
-					return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-						"error": "Failed to send message to " + phone,
-						"code":  500,
-					})
+		go func() {
+			// Loop through recipients
+			for _, phone := range payload.To {
+				completeFormat := fmt.Sprintf("%s%s", phone[:2], phone[2:])
+				JID := types.NewJID(completeFormat, types.DefaultUserServer)
+
+				// Loop through messages
+				for _, msg := range payload.Messages {
+					ConversationMessage := &waE2E.Message{
+						Conversation: &msg,
+					}
+
+					// Repeat message N times
+					for i := 0; i < *payload.Repeater; i++ {
+						_, err := WA.SendMessage(timeoutCtx, JID, ConversationMessage)
+						if err != nil {
+							done <- fmt.Errorf("failed to send message to %s: %w", phone, err)
+							return
+						}
+					}
 				}
+			}
+			done <- nil
+		}()
+
+		select {
+		case <-timeoutCtx.Done():
+			log.Print("/send route timed out, code: ", utils.ColorStatus(500))
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Request timed out while sending messages, you should make sure the phone numbers are correct :)",
+				"code":  500,
+			})
+		case err := <-done:
+			if err != nil {
+				log.Print("/send route accessed failed, code: ", utils.ColorStatus(500), ", error: ", err)
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"error": err.Error(),
+					"code":  500,
+				})
 			}
 		}
 

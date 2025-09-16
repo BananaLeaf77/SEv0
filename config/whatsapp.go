@@ -64,5 +64,6 @@ func InitWA(dbAddress string) (*whatsmeow.Client, context.Context, error) {
 		}
 	}
 
+	log.Print("Connected to ", utils.ColorText("Whatsapp", utils.Green), " successfully")
 	return client, ctx, nil
 }
