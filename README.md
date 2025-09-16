@@ -89,7 +89,7 @@ You can send either a single repeated message or multiple messages. Example (mul
 
 ```json
 {
-  "to": ["6281234567890"],
+  "to": ["62xxxxxxxx"],
   "messages": [
     "Hello *World*! 👋",
     "_This is italic_",
@@ -171,4 +171,5 @@ If you want, I can:
 * Create a small `deploy.md` with steps for Koyeb or Fly.io (no-credit-card required options).
 
 Which one do you want next?
+
 
