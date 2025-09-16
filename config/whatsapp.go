@@ -47,7 +47,7 @@ func InitWA(dbAddress string) (*whatsmeow.Client, context.Context, error) {
 		for evt := range qrChan {
 			if evt.Event == "code" {
 				fmt.Println("Scan this QR code with WhatsApp:")
-				qrterminal.Generate(evt.Code, qrterminal.L, os.Stdout)
+				qrterminal.GenerateHalfBlock(evt.Code, qrterminal.L, os.Stdout)
 			} else {
 				fmt.Println("Login event:", evt.Event)
 			}

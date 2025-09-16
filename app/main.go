@@ -2,6 +2,7 @@ package main
 
 import (
 	"SEv0/config"
+	api "SEv0/http"
 	"log"
 
 	"github.com/joho/godotenv"
@@ -18,6 +19,10 @@ func main() {
 		log.Fatal("Could not connect to the database, Error is: ", err)
 	}
 
-	config.InitWA(*address)
+	whatsmeow, ctx, err := config.InitWA(*address)
+	if err != nil {
+		log.Fatal("Could not initialize WhatsApp client, Error is: ", err)
+	}
 
+	api.InitApi(whatsmeow, ctx)
 }
