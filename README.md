@@ -1,11 +1,3 @@
-Nice — I’ll turn that README into a clearer, friendly, and safe explanation you can paste back into your repo. I’ll keep your original intent but make the steps explicit, add examples, call out the risks (spam / TOS / legal), and show a sample `curl` payload for the API.
-
----
-
-# SEv0 — README (explained & improved)
-
-## What is SEv0
-
 SEv0 is a simple Go backend that connects to WhatsApp (via WhatsMeow) and provides an HTTP API to broadcast messages.
 It was built for testing and automation — **use responsibly**. Sending unsolicited messages (spam) violates WhatsApp’s Terms of Service and may be illegal in many places. You are responsible for how you use this tool.
 
@@ -179,3 +171,4 @@ If you want, I can:
 * Create a small `deploy.md` with steps for Koyeb or Fly.io (no-credit-card required options).
 
 Which one do you want next?
+
