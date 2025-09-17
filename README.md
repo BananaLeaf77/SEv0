@@ -110,7 +110,7 @@ curl -X POST "http://localhost:3000/send" \
   -H "Authorization: Bearer supersecrettoken" \
   -H "Content-Type: application/json" \
   -d '{
-    "to": ["6281234567890"],
+    "to": ["62xxxxxxxx"],
     "messages": ["Hello *World*!", "Second message _italic_"],
     "repeater": 1
   }'
@@ -171,5 +171,6 @@ If you want, I can:
 * Create a small `deploy.md` with steps for Koyeb or Fly.io (no-credit-card required options).
 
 Which one do you want next?
+
 
 
